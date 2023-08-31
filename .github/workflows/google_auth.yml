@@ -25,7 +25,7 @@ jobs:
         id: google_auth
         with:
           create_credentials_file: true
-          # token_format: "access_token"
+          token_format: "access_token"
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER_NAME }}
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
 
