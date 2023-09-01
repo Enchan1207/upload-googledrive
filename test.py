@@ -17,11 +17,11 @@ def main() -> int:
     if credential_file_path is None:
         print(f"Environment variable {token_key} is not set.")
         return 1
-    creds = service_account.Credentials.from_service_account_file(credential_file_path)
-
     with open(credential_file_path) as f:
         credential_json = json.JSONDecoder().decode(f.read())
         print(credential_json.keys())
+
+    creds = service_account.Credentials.from_service_account_file(credential_file_path)
 
     try:
         service = build('drive', 'v3', credentials=creds)
