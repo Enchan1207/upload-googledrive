@@ -1,41 +1,22 @@
 #
-# ref: https://developers.google.com/drive/api/quickstart/python
+# サービスアカウントから生成したキーをもとにGoogle APIを叩く
 #
 
-from __future__ import print_function
-
-import os.path
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
+import os
+import sys
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-
-# If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+from googleapiclient import errors as google_api_errors
 
 
-def main():
-    """Shows basic usage of the Drive v3 API.
-    Prints the names and ids of the first 10 files the user has access to.
-    """
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            creds = service_account.Credentials.from_service_account_file(
-                'credentials.json', scopes=SCOPES)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+def main() -> int:
+    # ファイルからクレデンシャルを生成
+    token_key = "GOOGLE_GHA_CREDS_PATH"
+    credential_file_path = os.getenv(token_key)
+    if credential_file_path is None:
+        print(f"Environment variable {token_key} is not set.")
+        return 1
+    creds = service_account.Credentials.from_service_account_file(credential_file_path)
 
     try:
         service = build('drive', 'v3', credentials=creds)
@@ -47,14 +28,16 @@ def main():
 
         if not items:
             print('No files found.')
-            return
+            return 1
         print('Files:')
         for item in items:
             print(u'{0} ({1})'.format(item['name'], item['id']))
-    except HttpError as error:
-        # TODO(developer) - Handle errors from drive API.
+    except google_api_errors.HttpError as error:
         print(f'An error occurred: {error}')
+        return 1
+
+    return 0
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    sys.exit(main())
