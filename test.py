@@ -19,7 +19,7 @@ def main() -> int:
         return 1
     with open(credential_file_path) as f:
         credential_json = json.JSONDecoder().decode(f.read())
-        print(credential_json.keys())
+        print(credential_json['credential_source'])
 
     creds = service_account.Credentials.from_service_account_file(credential_file_path)
 
