@@ -11,33 +11,30 @@ from googleapiclient import errors as google_api_errors
 
 
 def main() -> int:
-    # ファイルからクレデンシャルを生成
-    token_key = "GOOGLE_GHA_CREDS_PATH"
-    credential_file_path = os.getenv(token_key)
-    if credential_file_path is None:
-        print(f"Environment variable {token_key} is not set.")
+    # 環境変数からクレデンシャルを生成
+    google_access_token_key = "GOOGLE_ACCESS_TOKEN"
+    google_access_token = os.getenv(google_access_token_key)
+    if google_access_token is None:
+        print(f"Environment variable {google_access_token_key} is not set.")
         return 1
-    with open(credential_file_path) as f:
-        credential_json = json.JSONDecoder().decode(f.read())
-
-    creds = service_account.Credentials.from_service_account_file(credential_json['credential_source']['url'])
+    credentials = service_account.Credentials.from_service_account_info(info={}, headers={"Authorization": google_access_token})
 
     try:
-        service = build('drive', 'v3', credentials=creds)
+        service = build("drive", "v3", credentials=credentials)
 
         # Call the Drive v3 API
         results = service.files().list(
             pageSize=10, fields="nextPageToken, files(id, name)").execute()
-        items = results.get('files', [])
+        items = results.get("files", [])
 
         if not items:
-            print('No files found.')
+            print("No files found.")
             return 1
-        print('Files:')
+        print("Files:")
         for item in items:
-            print(u'{0} ({1})'.format(item['name'], item['id']))
+            print(u"{0} ({1})".format(item['name'], item['id']))
     except google_api_errors.HttpError as error:
-        print(f'An error occurred: {error}')
+        print(f"An error occurred: {error}")
         return 1
 
     return 0
