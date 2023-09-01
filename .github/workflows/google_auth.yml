@@ -32,7 +32,7 @@ jobs:
       - name: move token file
         run: echo $GOOGLE_ACCESS_TOKEN > token.json
         env:
-          GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          GOOGLE_ACCESS_TOKEN: ${{ steps.google_auth.outputs.access_token }}
 
       - name: test python script
         run: python3 test.py
