@@ -4,6 +4,7 @@
 
 import os
 import sys
+import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient import errors as google_api_errors
@@ -17,6 +18,10 @@ def main() -> int:
         print(f"Environment variable {token_key} is not set.")
         return 1
     creds = service_account.Credentials.from_service_account_file(credential_file_path)
+
+    with open(credential_file_path) as f:
+        credential_json = json.JSONDecoder().decode(f.read())
+        print(credential_json.keys())
 
     try:
         service = build('drive', 'v3', credentials=creds)
