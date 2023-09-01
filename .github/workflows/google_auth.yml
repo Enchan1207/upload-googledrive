@@ -24,14 +24,15 @@ jobs:
       - uses: google-github-actions/auth@v1
         id: google_auth
         with:
-          create_credentials_file: true
-          token_format: access_token
-          access_token_scopes: https://www.googleapis.com/auth/drive.metadata.readonly
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER_NAME }}
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/drive.metadata.readonly
 
       - name: move token file
-        run: mv ${{steps.google_auth.outputs.credentials_file_path}} credentials.json
+        run: echo $GOOGLE_ACCESS_TOKEN > token.json
+        env:
+          GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
 
       - name: test python script
         run: python3 test.py
