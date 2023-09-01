@@ -25,16 +25,11 @@ jobs:
         id: google_auth
         with:
           create_credentials_file: true
-          token_format: "access_token"
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER_NAME }}
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
 
-      - run: sudo apt-get -y install jq
-
       - name: move token file
-        run: |
-          mv ${{steps.google_auth.outputs.credentials_file_path}} token.json
-          cat token.json | jq 'paths | .[-1]'
+        run: mv ${{steps.google_auth.outputs.credentials_file_path}} credentials.json
 
       - name: test python script
         run: python3 test.py
