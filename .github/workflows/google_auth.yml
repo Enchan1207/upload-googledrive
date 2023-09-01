@@ -30,7 +30,7 @@ jobs:
           access_token_scopes: https://www.googleapis.com/auth/drive.metadata.readonly
 
       - name: move token file
-        run: echo $GOOGLE_ACCESS_TOKEN > token.json
+        run: mv ${{steps.google_auth.outputs.credentials_file_path}} credentials.json
         env:
           GOOGLE_ACCESS_TOKEN: ${{ steps.google_auth.outputs.access_token }}
 
