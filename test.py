@@ -27,15 +27,14 @@ def main() -> int:
         return 1
 
     file_name = "example.txt"
-    file_metadata = {'name': file_name, 'parents': [folder_id]}
+    with open(file_name, "w") as f:
+        f.write("Hello, World!")
 
     # APIを叩く
     with build("drive", "v3", credentials=credentials) as drive_service:
         media = MediaFileUpload(file_name, mimetype='text/plain')
-        drive_service.files().create(
-            body=file_metadata,
-            media_body=media
-        ).execute()
+        file_metadata = {'name': file_name, 'parents': [folder_id]}
+        drive_service.files().create(body=file_metadata, media_body=media).execute()
 
     return 0
 
