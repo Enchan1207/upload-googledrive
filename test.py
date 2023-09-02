@@ -4,8 +4,10 @@
 
 import os
 import sys
-from googleapiclient.discovery import build
+
 from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 
 def main() -> int:
@@ -17,13 +19,23 @@ def main() -> int:
         return 1
     credentials = Credentials(google_access_token)
 
+    # 書き込み先のフォルダIDを取得
+    folder_id_key = "FOLDER_ID"
+    folder_id = os.getenv(folder_id_key)
+    if folder_id is None:
+        print(f"Environment variable {folder_id_key} is not set.")
+        return 1
+
+    file_name = "example.txt"
+    file_metadata = {'name': file_name, 'parents': [folder_id]}
+
     # APIを叩く
-    with build("drive", "v3", credentials=credentials) as service:
-        results = service.files().list(
-            pageSize=10, fields="nextPageToken, files(id, name)").execute()
-        items = results.get("files", [])
-        print(results)
-        print(items)
+    with build("drive", "v3", credentials=credentials) as drive_service:
+        media = MediaFileUpload(file_name, mimetype='text/plain')
+        drive_service.files().create(
+            body=file_metadata,
+            media_body=media
+        ).execute()
 
     return 0
 

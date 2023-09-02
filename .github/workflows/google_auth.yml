@@ -34,4 +34,5 @@ jobs:
       - name: test python script
         run: python3 test.py
         env:
+          FOLDER_ID: ${{ secrets.FOLDER_ID }}
           GOOGLE_ACCESS_TOKEN: ${{ steps.google_auth.outputs.access_token }}
