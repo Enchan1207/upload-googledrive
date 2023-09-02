@@ -28,6 +28,7 @@ jobs:
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
           token_format: access_token
           access_token_scopes: https://www.googleapis.com/auth/drive.metadata.readonly
+          create_credentials_file: false
 
       - name: test python script
         run: python3 test.py
