@@ -25,13 +25,13 @@ func main() {
 	service, err := drive.NewService(context, option.WithHTTPClient(config.Client(context, &token)))
 	if err != nil {
 		fmt.Printf("An error occured: %v\n", err)
-		return
+		os.Exit(1)
 	}
 
 	response, err := service.Files.List().PageSize(10).Fields("nextPageToken, files(id, name)").Do()
 	if err != nil {
 		fmt.Printf("An error occured: %v\n", err)
-		return
+		os.Exit(1)
 	}
 
 	fmt.Println("Files:")
