@@ -9,20 +9,13 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/oauth2"
 	"google.golang.org/api/drive/v3"
-	"google.golang.org/api/option"
 )
 
 func main() {
 	context := context.Background()
 
-	var config oauth2.Config
-
-	var token oauth2.Token
-	token.AccessToken = os.Getenv("GOOGLE_ACCESS_TOKEN")
-
-	service, err := drive.NewService(context, option.WithHTTPClient(config.Client(context, &token)))
+	service, err := drive.NewService(context)
 	if err != nil {
 		fmt.Printf("An error occured: %v\n", err)
 		os.Exit(1)
