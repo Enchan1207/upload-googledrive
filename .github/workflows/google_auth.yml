@@ -26,13 +26,9 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER_NAME }}
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
-          token_format: access_token
           access_token_scopes: https://www.googleapis.com/auth/drive
-          create_credentials_file: false
-          export_environment_variables: false
 
-      - name: test python script
-        run: python3 test.py
+      - name: test golang script
+        run: go run .
         env:
           FOLDER_ID: ${{ secrets.FOLDER_ID }}
-          GOOGLE_ACCESS_TOKEN: ${{ steps.google_auth.outputs.access_token }}
