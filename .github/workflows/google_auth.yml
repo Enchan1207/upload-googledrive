@@ -14,12 +14,10 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
-      - uses: actions/setup-python@v4
+      - name: setup node.js 18.x
+        uses: actions/setup-node@v3
         with:
-          python-version: "3.10"
-
-      - name: install google api client library
-        run: pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+          node-version: 18.x
 
       - uses: google-github-actions/auth@v1
         id: google_auth
@@ -28,7 +26,12 @@ jobs:
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
           access_token_scopes: https://www.googleapis.com/auth/drive
 
-      - name: test golang script
-        run: go run .
+      - name: build ts script
+        run: |
+          npm install
+          npm run build
+
+      - name: test ts script
+        run: node .
         env:
           FOLDER_ID: ${{ secrets.FOLDER_ID }}

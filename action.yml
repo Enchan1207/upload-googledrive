@@ -14,6 +14,7 @@ inputs:
     required: false
   destination:
     description: Folder identifier of destination
+    required: true
   overwrite:
     description: Whether to overwrite a file with the same name if it exists
     required: false
