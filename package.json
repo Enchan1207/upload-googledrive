@@ -2,9 +2,9 @@
   "name": "gha-googledrive",
   "version": "0.1.0",
   "description": "action to upload file to GoogleDrive",
-  "main": "dist/main.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsc && ncc build lib/main.js --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/node": "^20.6.0",
     "@types/yargs": "^17.0.24",
+    "@vercel/ncc": "^0.38.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
