@@ -23,5 +23,5 @@ inputs:
     default: false
 
 runs:
-  using: "node18"
-  main: "index.js"
+  using: "node16"
+  main: "dist/main.js"
