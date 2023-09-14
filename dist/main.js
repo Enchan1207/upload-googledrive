@@ -38,8 +38,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //
 // Custom action of GitHub Actions - Upload file to Google Drive
 //
-const google = __importStar(require("googleapis"));
+const core = __importStar(require("@actions/core"));
 const fs = __importStar(require("fs"));
+const google = __importStar(require("googleapis"));
+const path = __importStar(require("path"));
 const upload_1 = __importDefault(require("./upload"));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -48,13 +50,23 @@ function main() {
             scopes: ['https://www.googleapis.com/auth/drive']
         });
         const drive = new google.drive_v3.Drive({ auth: auth });
-        // 適当に呼び出す
-        const filePath = "README.md";
-        const displayName = "README.txt";
+        // アクションの入力を整理
+        const filePath = core.getInput('filepath', { required: true, trimWhitespace: true });
+        const name = core.getInput('name', { required: false, trimWhitespace: true });
+        const parent = core.getInput('parent', { required: false, trimWhitespace: true });
+        const overwrite = core.getBooleanInput('overwrite', { required: false });
+        core.setSecret(parent);
+        const displayName = name.length > 0 ? name : path.basename(filePath);
+        // リクエストボディを構成
+        if (!fs.existsSync(filePath)) {
+            throw new Error(`no such file: ${filePath}`);
+        }
         const body = fs.createReadStream(filePath);
-        const parentID = undefined;
-        return yield (0, upload_1.default)(drive, body, displayName, parentID, true);
+        // アップロード
+        yield (0, upload_1.default)(drive, body, displayName, parent, overwrite);
     });
 }
-main().then(console.log).catch(console.error);
+main().catch((error) => {
+    core.setFailed(error.message);
+});
 //# sourceMappingURL=main.js.map

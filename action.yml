@@ -9,12 +9,14 @@ inputs:
   filepath:
     description: Path of file to upload
     required: true
-  display_name:
+  name:
     description: Name of file to upload (if not specified, last component of path will be used)
     required: false
-  destination:
-    description: Folder identifier of destination (if not specified, file will be stored on root of drive)
+    default: ""
+  parent:
+    description: Parent folder identifier (if not specified, file will be stored on root of drive)
     required: false
+    default: ""
   overwrite:
     description: Whether to overwrite a file with the same name if it exists
     required: false

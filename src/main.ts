@@ -1,8 +1,10 @@
 //
 // Custom action of GitHub Actions - Upload file to Google Drive
 //
-import * as google from 'googleapis';
+import * as core from '@actions/core';
 import * as fs from 'fs';
+import * as google from 'googleapis';
+import * as path from 'path';
 import uploadFileToDrive from './upload';
 
 async function main() {
@@ -12,12 +14,24 @@ async function main() {
     });
     const drive = new google.drive_v3.Drive({ auth: auth });
 
-    // 適当に呼び出す
-    const filePath = "README.md"
-    const displayName = "README.txt";
+    // アクションの入力を整理
+    const filePath = core.getInput('filepath', { required: true, trimWhitespace: true });
+    const name = core.getInput('name', { required: false, trimWhitespace: true });
+    const parent = core.getInput('parent', { required: false, trimWhitespace: true });
+    const overwrite = core.getBooleanInput('overwrite', { required: false });
+    core.setSecret(parent);
+    const displayName = name.length > 0 ? name : path.basename(filePath);
+
+    // リクエストボディを構成
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`no such file: ${filePath}`);
+    }
     const body = fs.createReadStream(filePath);
-    const parentID = undefined;
-    return await uploadFileToDrive(drive, body, displayName, parentID, true);
+
+    // アップロード
+    await uploadFileToDrive(drive, body, displayName, parent, overwrite);
 }
 
-main().then(console.log).catch(console.error);
+main().catch((error) => {
+    core.setFailed(error.message);
+});
