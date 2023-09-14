@@ -37,20 +37,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //
 const google = __importStar(require("googleapis"));
 function main() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        const fileName = "example.txt";
+        const folderID = (_a = process.env.FOLDER_ID) !== null && _a !== void 0 ? _a : "";
         const auth = new google.Auth.GoogleAuth({
             scopes: ['https://www.googleapis.com/auth/drive']
         });
         const drive = new google.drive_v3.Drive({ auth: auth });
         const response = yield drive.files.list({
             pageSize: 10,
-            fields: 'nextPageToken, files(name, createdTime)',
+            fields: 'nextPageToken, files(id, name)',
+            includeItemsFromAllDrives: true,
+            supportsAllDrives: true,
+            q: `name = '${fileName}' and '${folderID}' in parents`
         });
         const files = response.data.files;
-        const nextPageToken = response.data.nextPageToken;
-        console.log(files === null || files === void 0 ? void 0 : files.length);
         files === null || files === void 0 ? void 0 : files.forEach((file) => {
-            console.log(`${file.name} (created: ${file.createdTime})`);
+            console.log(`${file.name} (${file.id})`);
         });
     });
 }
