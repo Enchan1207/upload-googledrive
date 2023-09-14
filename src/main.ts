@@ -1,28 +1,23 @@
 //
-//
+// Custom action of GitHub Actions - Upload file to Google Drive
 //
 import * as google from 'googleapis';
-
+import * as fs from 'fs';
+import uploadFileToDrive from './upload';
 
 async function main() {
-    const fileName: string = "example.txt";
-    const folderID: string = process.env.FOLDER_ID ?? "";
-
+    // GoogleDrive APIの準備
     const auth = new google.Auth.GoogleAuth({
         scopes: ['https://www.googleapis.com/auth/drive']
     });
     const drive = new google.drive_v3.Drive({ auth: auth });
-    const response = await drive.files.list({
-        pageSize: 10,
-        fields: 'nextPageToken, files(id, name)',
-        includeItemsFromAllDrives: true,
-        supportsAllDrives: true,
-        q: `name = '${fileName}' and '${folderID}' in parents`
-    });
-    const files = response.data.files;
-    files?.forEach((file) => {
-        console.log(`${file.name} (${file.id})`);
-    });
+
+    // 適当に呼び出す
+    const filePath = "README.md"
+    const displayName = "README.txt";
+    const body = fs.createReadStream(filePath);
+    const parentID = undefined;
+    return await uploadFileToDrive(drive, body, displayName, parentID, true);
 }
 
-main().catch(console.error);
+main().then(console.log).catch(console.error);

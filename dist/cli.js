@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -36,25 +37,59 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 //
-// Custom action of GitHub Actions - Upload file to Google Drive
+// GoogleDriveにファイルをアップロードする
 //
 const google = __importStar(require("googleapis"));
 const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const yargs_1 = __importDefault(require("yargs"));
 const upload_1 = __importDefault(require("./upload"));
 function main() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        // コマンドライン引数のパース
+        const args = yargs_1.default
+            .option("path", {
+            type: 'string',
+            description: "source file path",
+            demandOption: true
+        })
+            .option("name", {
+            type: 'string',
+            description: "display name on Google Drive",
+            demandOption: false
+        })
+            .option("parent", {
+            type: 'string',
+            description: "parent folder identifier",
+            demandOption: false
+        })
+            .option("overwrite", {
+            type: 'boolean',
+            description: "overwrite if exists",
+            demandOption: true,
+            default: false
+        })
+            .help()
+            .parseSync();
+        const filePath = args.path;
+        const fileName = ((_a = args.name) !== null && _a !== void 0 ? _a : "").length > 0 ? args.name : path.basename(filePath);
+        const parentID = args.parent;
         // GoogleDrive APIの準備
         const auth = new google.Auth.GoogleAuth({
             scopes: ['https://www.googleapis.com/auth/drive']
         });
         const drive = new google.drive_v3.Drive({ auth: auth });
-        // 適当に呼び出す
-        const filePath = "README.md";
-        const displayName = "README.txt";
-        const body = fs.createReadStream(filePath);
-        const parentID = undefined;
-        return yield (0, upload_1.default)(drive, body, displayName, parentID, true);
+        // アップロードして結果を表示
+        try {
+            const response = yield (0, upload_1.default)(drive, fs.createReadStream(filePath), fileName, parentID, true);
+            const fileInfo = response.data;
+            console.log(`${fileName} was uploaded to google drive. (id: ${fileInfo.id})`);
+        }
+        catch (error) {
+            console.error(`Failed to upload file: ${error.message}`);
+        }
     });
 }
-main().then(console.log).catch(console.error);
-//# sourceMappingURL=main.js.map
+main().catch(console.error);
+//# sourceMappingURL=cli.js.map
