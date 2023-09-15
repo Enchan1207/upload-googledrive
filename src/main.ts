@@ -19,19 +19,30 @@ async function main() {
     const name = core.getInput('name', { required: false, trimWhitespace: true });
     const parent = core.getInput('parent', { required: false, trimWhitespace: true });
     const overwrite = core.getBooleanInput('overwrite', { required: false });
-    core.setSecret(parent);
+
+    // 入力をチェック
+    if (parent.length > 0) {
+        core.setSecret(parent);
+    }
+    if (!fs.existsSync(filePath)) {
+        core.error(`No such file: ${filePath}`);
+        throw new Error("Specified file not found");
+    }
     const displayName = name.length > 0 ? name : path.basename(filePath);
 
     // リクエストボディを構成
-    if (!fs.existsSync(filePath)) {
-        throw new Error(`no such file: ${filePath}`);
-    }
     const body = fs.createReadStream(filePath);
 
     // アップロード
-    await uploadFileToDrive(drive, body, displayName, parent, overwrite);
+    core.info(`Upload file ${filePath} (display name: ${displayName}) to Google Drive...`);
+    uploadFileToDrive(drive, body, displayName, parent, overwrite).then((response) => {
+        core.info(`Finished. (upload size: ${response.data.size ?? "unknown"} bytes)`);
+    }).catch((error) => {
+        core.error(`Failed to upload file: ${error.message}`);
+        throw error;
+    });
 }
 
 main().catch((error) => {
-    core.setFailed(error.message);
+    core.setFailed(error);
 });

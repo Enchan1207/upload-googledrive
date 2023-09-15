@@ -41,7 +41,7 @@ async function createNewFile(
     body: any,
     displayName: string,
     parentID: string | undefined) {
-    const parents = parentID ? [parentID] : undefined;
+    const parents = (parentID ?? "").length > 0 ? [parentID!] : undefined;
     const response = await drive.files.create({
         requestBody: {
             parents: parents,
@@ -84,7 +84,8 @@ async function queryFileIDByName(
     drive: google.drive_v3.Drive,
     displayName: string,
     parentID: string | undefined): Promise<string[]> {
-    const query = `name = '${displayName}'` + (parentID !== undefined ? ` and '${parentID}' in parents` : "");
+    const isPassedValidParentID = (parentID ?? "").length > 0;
+    const query = `name = '${displayName}'` + (isPassedValidParentID ? ` and '${parentID!}' in parents` : "");
     const response = await drive.files.list({
         includeItemsFromAllDrives: true,
         supportsAllDrives: true,
