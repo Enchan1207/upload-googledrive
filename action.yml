@@ -1,0 +1,27 @@
+#
+# アクションの定義
+#
+name: gha-googledrive
+description: Upload file to Google Drive
+author: Enchan1207
+
+inputs:
+  filepath:
+    description: Path of file to upload
+    required: true
+  name:
+    description: Name of file to upload (if not specified, last component of path will be used)
+    required: false
+    default: ""
+  parent:
+    description: Parent folder identifier (if not specified, file will be stored on root of drive)
+    required: false
+    default: ""
+  overwrite:
+    description: Whether to overwrite a file with the same name if it exists
+    required: false
+    default: false
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
