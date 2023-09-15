@@ -1,5 +1,5 @@
 {
-  "name": "gha-googledrive",
+  "name": "upload-googledrive",
   "version": "0.1.0",
   "description": "action to upload file to GoogleDrive",
   "main": "dist/index.js",
