@@ -1,15 +1,22 @@
-name: google-auth
+name: build
 
 on:
   push:
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+  pull_request:
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
 
 jobs:
-  google_api_access:
+  build:
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - uses: "actions/checkout@v3"
@@ -18,13 +25,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20.x
-
-      - uses: google-github-actions/auth@v1
-        id: google_auth
-        with:
-          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER_NAME }}
-          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
-          access_token_scopes: https://www.googleapis.com/auth/drive
 
       - name: cache node modules
         id: cache-node-modules
