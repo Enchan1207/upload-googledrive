@@ -49,7 +49,8 @@ async function createNewFile(
         },
         media: {
             body: body
-        }
+        },
+        fields: "id, name, size"
     });
     return response;
 }
@@ -69,7 +70,8 @@ async function updateExistingFile(
         fileId: fileID,
         media: {
             body: body
-        }
+        },
+        fields: "id, name, size"
     });
     return response;
 }

@@ -2,8 +2,9 @@
 //
 // GoogleDriveにファイルをアップロードする
 //
-import * as google from 'googleapis';
+import { filesize } from "filesize";
 import * as fs from 'fs';
+import * as google from 'googleapis';
 import * as path from 'path';
 import yargs from 'yargs';
 import uploadFileToDrive from './upload';
@@ -48,7 +49,11 @@ async function main() {
     try {
         const response = await uploadFileToDrive(drive, fs.createReadStream(filePath), fileName, parentID, true);
         const fileInfo = response.data;
-        console.log(`${fileName} was uploaded to google drive. (id: ${fileInfo.id})`);
+        const responseFileID: string = fileInfo.id!;
+        const responseFileName: string = fileInfo.name!;
+        const responseFileSize: number = Number(fileInfo.size ?? "");
+
+        console.log(`${responseFileName} was uploaded to google drive. (id: ${responseFileID} size: ${filesize(responseFileSize, { spacer: "", standard: "jedec" })})`);
     } catch (error: any) {
         console.error(`Failed to upload file: ${error.message}`);
     }

@@ -2,6 +2,7 @@
 // Custom action of GitHub Actions - Upload file to Google Drive
 //
 import * as core from '@actions/core';
+import { filesize } from "filesize";
 import * as fs from 'fs';
 import * as google from 'googleapis';
 import * as path from 'path';
@@ -36,7 +37,14 @@ async function main() {
     // アップロード
     core.info(`Upload file ${filePath} (display name: ${displayName}) to Google Drive...`);
     uploadFileToDrive(drive, body, displayName, parent, overwrite).then((response) => {
-        core.info(`Finished. (upload size: ${response.data.size ?? "unknown"} bytes)`);
+        const fileSizeStr = ((sizeStr) => {
+            const size = sizeStr ?? "";
+            if (size.length == 0) {
+                return "unknown";
+            }
+            return filesize(Number(size), { spacer: "", standard: "jedec" });
+        })(response.data.size);
+        core.info(`Finished. (upload size: ${fileSizeStr})`);
     }).catch((error) => {
         core.error(`Failed to upload file: ${error.message}`);
         throw error;
