@@ -39,7 +39,7 @@ After that:
 
 ## Notices
 
-The file will be uploaded to Google Drive of **authorized service account**. To access uploaded files from Google Drive, share your folder with service account and pass its identifier to the action's `parent`.
+The file will be uploaded to Google Drive of **authenticated service account**. To access uploaded files from Google Drive, share your folder with service account and pass its identifier to the action's `parent`.
 Also note that uploading to a shared folder will (potentially) still consume drive space in your service account.
 
 ## License
